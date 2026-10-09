@@ -305,7 +305,7 @@ test("compares two vehicles and removes one", async ({ page }) => {
     page.getByRole("heading", { name: "Golf", exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "Toyota Yaris Cross", exact: true }),
+    page.getByRole("heading", { name: "Yaris Cross", exact: true }),
   ).toBeVisible();
   await page
     .getByRole("textbox", { name: "Kenteken voor vergelijking" })
