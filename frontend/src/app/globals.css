@@ -1661,13 +1661,15 @@ input[type="range"] {
   font-weight: 400;
   margin: 0;
 }
-.comparison-table .plate-small > span:last-child {
-  font-size: 0.625rem;
-  letter-spacing: 0.03em;
-  padding-inline: 0.2rem;
-}
 .comparison-remove {
   margin-top: 0.25rem;
+  color: var(--danger);
+  background: var(--bg);
+  border: 1px solid var(--danger);
+  border-radius: 50%;
+}
+.comparison-remove:hover {
+  background: color-mix(in srgb, var(--danger) 12%, var(--bg));
 }
 .comparison-table tfoot th,
 .comparison-table tfoot td {
@@ -1705,9 +1707,6 @@ input[type="range"] {
   }
   .comparison-car h2 {
     font-size: 1.125rem;
-  }
-  .comparison-table .plate-small > span:last-child {
-    font-size: 0.75rem;
   }
   .comparison-scroll-hint {
     display: none;

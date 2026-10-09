@@ -128,6 +128,7 @@ test("mobile comparison aligns cars in a table and scrolls a third car", async (
   }
   const table = page.getByRole("table");
   await expect(table.getByRole("columnheader")).toHaveCount(3);
+  await expect(table.locator(".plate-badge")).toHaveCount(0);
   await expect(page.locator(".skip-link")).not.toBeFocused();
   const headings = await table
     .locator("thead h2")
@@ -168,6 +169,19 @@ test("mobile comparison aligns cars in a table and scrolls a third car", async (
       "layout-polish",
       `comparison-${test.info().project.name}.png`,
     ),
+    fullPage: true,
+    style: ".skip-link { visibility: hidden; }",
+  });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.screenshot({
+    path: join(
+      process.cwd(),
+      "..",
+      "artifacts",
+      "layout-polish",
+      `comparison-desktop-${test.info().project.name}.png`,
+    ),
+    animations: "disabled",
     fullPage: true,
     style: ".skip-link { visibility: hidden; }",
   });

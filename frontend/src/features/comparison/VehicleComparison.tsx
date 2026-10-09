@@ -3,7 +3,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { Columns2, Plus, X, ArrowRight, Info } from "lucide-react";
 import { useCollection } from "@/components/search/RecentSearches";
-import { LicensePlateBadge } from "@/components/search/LicensePlateBadge";
 import { plateSchema, formatPlate } from "@/lib/plates";
 import { fetchVehicle } from "@/lib/api";
 import { addVehicle, writeVehicles } from "@/lib/storage";
@@ -16,6 +15,14 @@ import {
 } from "@/lib/formatting";
 import type { Vehicle } from "@/types/vehicle";
 import { useHydrated } from "@/lib/useHydrated";
+function shortModelName(vehicle: Vehicle) {
+  const model = titleCase(vehicle.model);
+  const make = `${titleCase(vehicle.make)} `;
+  return (model.startsWith(make) ? model.slice(make.length) : model)
+    .split(/\s+/)
+    .slice(0, 2)
+    .join(" ");
+}
 const metrics: { label: string; format: (vehicle: Vehicle) => string }[] = [
   {
     label: "Bouwjaar",
@@ -207,15 +214,16 @@ export function VehicleComparison() {
                   {vehicles.map((v) => (
                     <th scope="col" key={v.licensePlate}>
                       <div className="comparison-car">
-                        <h2>{titleCase(v.model)}</h2>
+                        <h2 title={titleCase(v.model)}>
+                          {shortModelName(v)}
+                        </h2>
                         <p>{titleCase(v.make)}</p>
-                        <LicensePlateBadge plate={v.licensePlate} small />
                         <button
                           className="icon-button comparison-remove"
                           aria-label={`Verwijder ${formatPlate(v.licensePlate)} uit vergelijking`}
                           onClick={() => remove(v.licensePlate)}
                         >
-                          <X size={17} />
+                          <X size={20} strokeWidth={2.5} aria-hidden="true" />
                         </button>
                       </div>
                     </th>
