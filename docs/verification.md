@@ -2,6 +2,13 @@
 
 Entries record the state at the time of each check. Newer dated evidence can supersede older deployment or platform limitations; historical entries remain intact. For current setup instructions, use [Installation](install.md), [Configuration](configuration.md) and [Troubleshooting](troubleshooting.md).
 
+## Separate quality and deployment workflows, 9 October 2026
+
+- Actionlint 1.7.12 validates both workflow files. Eight local trigger-policy cases cover successful main pushes, PRs, manual checks, feature branches, forks, failed/cancelled runs and disabled deployment. Structural checks confirm read-only quality permissions and deployment's use of the originating run ID, tested SHA and checked-image artifact.
+- Bash syntax passes for `scripts/deploy-vps.sh`. Four isolated checks with mocked Git/SSH/SCP confirm tested-SHA selection, superseded-run skipping, invalid-SHA rejection and the legacy `GITHUB_SHA` fallback. No VPS was contacted by these tests.
+- Local Docker container builds and PostgreSQL smoke checks could not run because the Docker engine was unavailable. The existing rollback suite was attempted under Git Bash; two scenarios failed because Linux `flock` was unavailable. The Linux GitHub quality workflow retains container/PostgreSQL verification and the rollback suite.
+- These local checks do not establish hosted artifact transfer, GHCR publishing or a successful production rollout of the separated workflows. Those require subsequent GitHub runs.
+
 ## Oracle production rollout, 8 October 2026
 
 [Main workflow 37784839170](https://github.com/twanterstappen/ritvizier/actions/runs/37784839170) passed frontend, backend, both browser engines, the history secret scan, container/real PostgreSQL smoke verification, image publishing and SSH deployment. The VPS `current-release` matched `6492d2ab1293dd6ebfc15886fb3f4f823b0736a2`.

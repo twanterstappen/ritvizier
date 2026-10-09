@@ -73,7 +73,7 @@ Set-Location ..
 
 Record checks that actually ran. Keep useful screenshots in ignored `artifacts/`. Test behavior and regressions rather than mirroring trivial implementation details.
 
-Deployment changes also require container builds and `scripts/container-smoke.sh`. CI starts real PostgreSQL and verifies migrations/cache writes before publishing the checked image digests. Main deployment is enabled through `DEPLOY_ENABLED`; see [deployment setup](docs/deployment.md). Feature branches and pull requests run checks without deploying.
+Deployment changes also require container builds and `scripts/container-smoke.sh`. **Quality checks** starts real PostgreSQL and verifies migrations/cache writes without publishing or deploying. A separate **Deploy production** workflow consumes its tested images only after a successful main push, with `DEPLOY_ENABLED=true`. Pull requests and feature branches run checks only. A manual **Quality checks** run also never deploys, including on `main`; see [running checks only](docs/deployment.md#run-only-quality-checks).
 
 ## Versions and releases
 
