@@ -86,13 +86,19 @@ test("short and long pages keep the footer at the end without a mobile gap", asy
       );
       expect(new Set(colors).size).toBe(1);
       if (width < 768) {
-        const gap = await page.evaluate(
-          () =>
-            document.querySelector(".mobile-nav")!.getBoundingClientRect().top -
-            document.querySelector(".site-footer")!.getBoundingClientRect()
-              .bottom,
-        );
-        expect(Math.abs(gap)).toBeLessThanOrEqual(1);
+        await expect
+          .poll(() =>
+            page.evaluate(() =>
+              Math.abs(
+                document.querySelector(".mobile-nav")!.getBoundingClientRect()
+                  .top -
+                  document
+                    .querySelector(".site-footer")!
+                    .getBoundingClientRect().bottom,
+              ),
+            ),
+          )
+          .toBeLessThanOrEqual(1);
       }
       await mkdir(join(process.cwd(), "..", "artifacts", "layout-polish"), {
         recursive: true,

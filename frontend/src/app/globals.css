@@ -1664,7 +1664,7 @@ input[type="range"] {
 .comparison-table .plate-small > span:last-child {
   font-size: 0.625rem;
   letter-spacing: 0.03em;
-  padding-inline: 0.35rem;
+  padding-inline: 0.2rem;
 }
 .comparison-remove {
   margin-top: 0.25rem;
