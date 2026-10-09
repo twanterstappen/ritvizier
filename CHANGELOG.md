@@ -4,6 +4,7 @@ User-visible changes use semantic versions and annotated Git tags. Dates use the
 
 ## Unreleased
 
+- Separated quality checks from production deployment. Pull requests and manual checks never publish or deploy; successful main pushes hand their tested images to a separate deployment workflow.
 - Reorganized the README with portfolio-style status/technology badges, a feature overview, clearer local setup and configuration, and a documentation index.
 - Added installation, configuration and troubleshooting guides, and corrected architecture/handoff notes for listing endpoints, provider errors and the verified production topology.
 

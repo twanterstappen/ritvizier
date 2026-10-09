@@ -1,8 +1,18 @@
 # Automatic VPS deployment
 
-The GitHub workflow scans full Git history for secrets with redacted output and runs frontend checks, backend checks and both browser engines. After all pass it builds the frontend/backend containers, starts them with PostgreSQL and verifies migrations, a cache write/read/delete and the frontend API proxy. Only a successful push to `main` publishes those exact images to GHCR. Deployment uses their immutable digests, not a moving `latest` tag.
+The [Quality checks workflow](../.github/workflows/ci.yml) scans full Git history for secrets with redacted output and runs frontend checks, backend checks and both browser engines. After all pass it builds the frontend/backend containers, starts them with PostgreSQL and verifies migrations, a cache write/read/delete and the frontend API proxy. It never publishes images or connects to the VPS.
 
-Every push to `main`, including documentation-only changes and merged pull requests, starts this pipeline. There are no path filters. Deployment runs after successful checks and container verification when `DEPLOY_ENABLED=true`; production environment approval rules can make it wait. Feature-branch pushes and pull requests run checks without deploying. Local commits do not trigger GitHub Actions until pushed.
+The separate [Deploy production workflow](../.github/workflows/deploy.yml) runs after successful quality checks for a push to `main` when `DEPLOY_ENABLED=true`. It downloads the exact tested images from that quality run, publishes them to GHCR and deploys their immutable digests. It checks out the tested revision and skips superseded main commits. Pull requests, feature-branch pushes, failed checks and manually dispatched quality runs cannot publish or deploy.
+
+Every push to `main`, including documentation-only changes and merged pull requests, still starts quality checks and can lead to automatic deployment. There are no path filters. Production environment approval rules can make deployment wait. Local commits do not trigger GitHub Actions until pushed.
+
+## Run only quality checks
+
+For Teun's pull request, open its **Checks** tab to view the automatic quality run. PR checks do not deploy, including pull requests from forks. GitHub may require maintainer approval before running a new contributor's fork workflow; approving those checks does not approve a production deployment.
+
+To run checks yourself, open the repository's **Actions** tab, select **Quality checks**, choose **Run workflow**, select the branch and start it. This manual run performs checks only, even when you select `main`. Merging the PR creates a separate main push, which can deploy after its own successful checks.
+
+The checked-image artifact from a main push is retained for three days. If a deployment rerun finds its artifact expired, rerun the original push quality run to create a fresh artifact. A new manual quality run is deliberately not a deployment request. Set the repository variable `DEPLOY_ENABLED=false` to suspend automatic production deployment while keeping checks enabled.
 
 Enable deployment after completing setup below. Linux x86-64 with Docker Engine and Compose v2.24+ is required. Allow roughly 2 GB RAM minimum, preferably 4 GB, and room for retained images. The VPS pulls prebuilt images; it does not build Next.js. PostgreSQL and FastAPI have no published ports. By default, Next.js listens on host loopback port 3000 for a local reverse proxy. The current owner's external-proxy topology is documented below. This workflow does not install or change an existing proxy.
 
@@ -16,7 +26,7 @@ For this topology, set `HTTP_BIND_ADDRESS=0.0.0.0` and `HTTP_PORT=3000` in `/opt
 
 The default binding remains `127.0.0.1` for installations with a proxy on the same server. A container proxy on another server cannot reach that loopback binding. Do not route this remote proxy through the portfolio's Nginx container or attach it to the app network. `/opt/ritvizier/.env` is mode 600. This 1 GB VPS has a 2 GB swap file to support container startup; production images are still built in GitHub Actions rather than on the VPS.
 
-The GitHub `production` environment restricts deployment to `main`; `DEPLOY_ENABLED=true` enables the existing gated workflow. Checks cover both browser engines, frontend/backend validation, the history secret scan, production container builds and PostgreSQL/proxy smoke verification. Look at the main workflow's deploy job and `/opt/ritvizier/current-release` to establish the actual deployed revision. An enabled variable or successful test job alone does not establish deployment.
+The GitHub `production` environment restricts deployment to `main`; `DEPLOY_ENABLED=true` enables the separate gated deployment workflow. Checks cover both browser engines, frontend/backend validation, the history secret scan, production container builds and PostgreSQL/proxy smoke verification. Look at the **Deploy production** workflow's deploy job and `/opt/ritvizier/current-release` to establish the actual deployed revision. An enabled variable or successful quality run alone does not establish deployment.
 
 Create an environment named `production` at **Settings → Environments**. Restrict its deployment branches to `main`. Required reviewers are optional; enabling them makes deployments wait for your approval.
 

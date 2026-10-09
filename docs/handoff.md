@@ -4,6 +4,8 @@ Updated 9 October 2026 with installation, configuration and troubleshooting guid
 
 ## First session
 
+Quality checks and deployment are separate workflows. PRs, feature-branch pushes and manually started checks never deploy. Successful pushes to `main` can trigger **Deploy production**, which consumes the exact checked image artifact and revision when `DEPLOY_ENABLED=true`. See [checks-only instructions](deployment.md#run-only-quality-checks). The prior rollout evidence below describes the original combined workflow; it does not verify this separation in GitHub.
+
 Oracle release `6492d2ab1293dd6ebfc15886fb3f4f823b0736a2` was deployed successfully on 8 October through [workflow 37784839170](https://github.com/twanterstappen/ritvizier/actions/runs/37784839170). The app is on `oracle-portfolio` at `158.178.148.105`; the separate reverse proxy is `144.21.43.210` and targets the frontend on port 3000. See [current topology](deployment.md#current-oracle-topology). All three app containers were healthy, HTTPS home/search pages responded, and a live RDW lookup wrote a PostgreSQL cache record. For later rollouts, check the main workflow and VPS `current-release` file rather than assuming this revision is still current. No listing feed is connected yet.
 
 Read [Agent instructions](../AGENTS.md), [Contributing](../CONTRIBUTING.md), [Architecture](architecture.md) and [Verification](verification.md). Inspect the branch, working tree and history. Start the next task from `main` on a new branch. Follow [Installation](install.md) with the normal API on port 8000 and frontend on port 3000. [Configuration](configuration.md) explains native/container settings; [Troubleshooting](troubleshooting.md) covers common failures.

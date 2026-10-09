@@ -1,0 +1,103 @@
+name: Deploy production
+on:
+  workflow_run:
+    workflows: [Quality checks]
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: ritvizier-production
+  cancel-in-progress: false
+jobs:
+  publish:
+    # Only consume artifacts from successful, trusted main pushes, never PRs
+    # or manually dispatched quality checks.
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+      packages: write
+    outputs:
+      current: ${{ steps.revision.outputs.current }}
+      frontend_image: ${{ steps.publish.outputs.frontend_image }}
+      backend_image: ${{ steps.publish.outputs.backend_image }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Skip superseded main revisions
+        id: revision
+        env:
+          DEPLOY_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          current=$(git ls-remote origin refs/heads/main | cut -f1)
+          if [[ "$current" == "$DEPLOY_SHA" ]]; then
+            echo 'current=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'current=false' >> "$GITHUB_OUTPUT"
+            echo 'Skipping superseded main commit.'
+          fi
+      - name: Download images from the successful quality run
+        if: steps.revision.outputs.current == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: checked-images
+          path: ${{ runner.temp }}/checked-images
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Load and publish the exact checked images
+        id: publish
+        if: steps.revision.outputs.current == 'true'
+        env:
+          DEPLOY_SHA: ${{ github.event.workflow_run.head_sha }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          docker load -i "$RUNNER_TEMP/checked-images/checked-images.tar"
+          registry="ghcr.io/${GITHUB_REPOSITORY,,}"
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          trap 'docker logout ghcr.io' EXIT
+          for service in frontend backend; do
+            image="$registry-$service:$DEPLOY_SHA"
+            docker tag "ritvizier-$service:test" "$image"
+            docker push "$image"
+            digest=$(docker inspect --format '{{index .RepoDigests 0}}' "$image")
+            echo "${service}_image=$digest" >> "$GITHUB_OUTPUT"
+          done
+  deploy:
+    needs: publish
+    if: needs.publish.outputs.current == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Deploy checked image digests over SSH
+        env:
+          DEPLOY_SHA: ${{ github.event.workflow_run.head_sha }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+          VPS_PORT: ${{ vars.VPS_PORT || '22' }}
+          VPS_PATH: ${{ vars.VPS_PATH || '/opt/ritvizier' }}
+          SITE_URL: ${{ vars.SITE_URL }}
+          FRONTEND_IMAGE: ${{ needs.publish.outputs.frontend_image }}
+          BACKEND_IMAGE: ${{ needs.publish.outputs.backend_image }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/deploy-vps.sh
