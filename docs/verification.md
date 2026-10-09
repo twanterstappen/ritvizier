@@ -2,6 +2,13 @@
 
 Entries record the state at the time of each check. Newer dated evidence can supersede older deployment or platform limitations; historical entries remain intact. For current setup instructions, use [Installation](install.md), [Configuration](configuration.md) and [Troubleshooting](troubleshooting.md).
 
+## Mobile layout and comparison polish, 9 October 2026
+
+- Frontend lint, TypeScript, all 24 unit tests and the optimized production build pass. All 23 Chromium scenarios passed after the functional changes; the four layout scenarios passed again after the final comparison spacing and screenshot adjustments.
+- Browser regressions check inset 44px plate-clear targets in normal/compact inputs, clearing/focus, footer position on short and long pages, matching light-mode backgrounds, aligned two-car columns at 320px, contained three-car scrolling with keyboard access, removal, non-import age wording and fresh SVG/ICO responses.
+- Desktop, small-phone and dark screenshots were inspected. End-of-page viewport captures distinguish actual footer/navigation geometry from full-page screenshots' sticky-element painting. Evidence is in ignored `artifacts/layout-polish/`, plus the existing home/vehicle captures. The comparison screenshot hides only the unfocused skip link during capture to avoid the known full-page paint artifact; product focus behavior remains unchanged.
+- Local WebKit cannot launch because Windows browser dependencies are missing, as confirmed during the preceding PR review. The new scenarios run in both engines in GitHub CI. No physical-device Safari, fresh Docker/PostgreSQL verification or public deployment is claimed by these local checks.
+
 ## Search metadata and crawl discovery, 9 October 2026
 
 Added app-owned robots and sitemap routes, page-specific descriptions and a kentekencheck-focused homepage title. A read-only live check found the existing production sitemap returned 404, the homepage canonical used `https://ritvizier.nl`, and robots.txt contained proxy-provided policy text. This change has not been deployed; the public proxy's handling of the new robots rules and sitemap reference must be checked after rollout.

@@ -3,7 +3,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { Columns2, Plus, X, ArrowRight, Info } from "lucide-react";
 import { useCollection } from "@/components/search/RecentSearches";
-import { LicensePlateBadge } from "@/components/search/LicensePlateBadge";
 import { plateSchema, formatPlate } from "@/lib/plates";
 import { fetchVehicle } from "@/lib/api";
 import { addVehicle, writeVehicles } from "@/lib/storage";
@@ -16,6 +15,14 @@ import {
 } from "@/lib/formatting";
 import type { Vehicle } from "@/types/vehicle";
 import { useHydrated } from "@/lib/useHydrated";
+function shortModelName(vehicle: Vehicle) {
+  const model = titleCase(vehicle.model);
+  const make = `${titleCase(vehicle.make)} `;
+  return (model.startsWith(make) ? model.slice(make.length) : model)
+    .split(/\s+/)
+    .slice(0, 2)
+    .join(" ");
+}
 const metrics: { label: string; format: (vehicle: Vehicle) => string }[] = [
   {
     label: "Bouwjaar",
@@ -183,45 +190,75 @@ export function VehicleComparison() {
         )}
       {vehicles.length ? (
         <>
+          {vehicles.length === 3 && (
+            <p className="comparison-scroll-hint">
+              Veeg de tabel opzij om alle drie de auto’s te bekijken.
+            </p>
+          )}
+          {/* eslint-disable jsx-a11y/no-noninteractive-tabindex -- The scrollable table region needs keyboard scrolling. */}
           <div
-            className="comparison-grid"
-            style={
-              { "--vehicle-count": vehicles.length } as React.CSSProperties
-            }
+            className="comparison-scroll"
+            role="region"
+            aria-label="Voertuigvergelijking"
+            tabIndex={0}
           >
-            {vehicles.map((v) => (
-              <article className="comparison-vehicle" key={v.licensePlate}>
-                <div className="comparison-vehicle-title">
-                  <div>
-                    <h2>{titleCase(v.model)}</h2>
-                    <p className="vehicle-brand">{titleCase(v.make)}</p>
-                    <LicensePlateBadge plate={v.licensePlate} small />
-                  </div>
-                  <button
-                    className="icon-button"
-                    aria-label={`Verwijder ${formatPlate(v.licensePlate)} uit vergelijking`}
-                    onClick={() => remove(v.licensePlate)}
-                  >
-                    <X size={19} />
-                  </button>
-                </div>
-                <dl>
-                  {metrics.map(({ label, format }) => (
-                    <div className="comparison-metric" key={label}>
-                      <dt>{label}</dt>
-                      <dd>{format(v)}</dd>
-                    </div>
+            <table
+              className={`comparison-table ${vehicles.length === 3 ? "comparison-three" : ""}`}
+            >
+              <caption className="sr-only">
+                Voertuiggegevens naast elkaar vergelijken
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Kenmerk</th>
+                  {vehicles.map((v) => (
+                    <th scope="col" key={v.licensePlate}>
+                      <div className="comparison-car">
+                        <h2 title={titleCase(v.model)}>
+                          {shortModelName(v)}
+                        </h2>
+                        <p>{titleCase(v.make)}</p>
+                        <button
+                          className="icon-button comparison-remove"
+                          aria-label={`Verwijder ${formatPlate(v.licensePlate)} uit vergelijking`}
+                          onClick={() => remove(v.licensePlate)}
+                        >
+                          <X size={18} strokeWidth={1.75} aria-hidden="true" />
+                        </button>
+                      </div>
+                    </th>
                   ))}
-                </dl>
-                <Link
-                  className="library-open"
-                  href={`/auto/${formatPlate(v.licensePlate)}`}
-                >
-                  Alle voertuiggegevens <ArrowRight size={16} />
-                </Link>
-              </article>
-            ))}
+                </tr>
+              </thead>
+              <tbody>
+                {metrics.map(({ label, format }) => (
+                  <tr key={label}>
+                    <th scope="row">{label}</th>
+                    {vehicles.map((v) => (
+                      <td key={v.licensePlate}>{format(v)}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th scope="row">Meer informatie</th>
+                  {vehicles.map((v) => (
+                    <td key={v.licensePlate}>
+                      <Link
+                        className="comparison-open"
+                        href={`/auto/${formatPlate(v.licensePlate)}`}
+                        aria-label={`Alle voertuiggegevens van ${titleCase(v.make)} ${titleCase(v.model)}`}
+                      >
+                        Bekijk auto <ArrowRight size={14} aria-hidden="true" />
+                      </Link>
+                    </td>
+                  ))}
+                </tr>
+              </tfoot>
+            </table>
           </div>
+          {/* eslint-enable jsx-a11y/no-noninteractive-tabindex */}
           {vehicles.length === 1 && (
             <p className="comparison-hint">
               <Info size={17} />

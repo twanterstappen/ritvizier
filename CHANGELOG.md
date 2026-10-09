@@ -4,6 +4,13 @@ User-visible changes use semantic versions and annotated Git tags. Dates use the
 
 ## Unreleased
 
+- Kept plate clear controls inside the input border with a full touch target, including compact searches.
+- Added a fresh R-mark favicon URL and matching ICO fallback to replace cached older browser icons.
+- Kept the footer at the end of short pages, removed excess mobile bottom space, and matched navigation/footer backgrounds to the page.
+- Replaced stacked comparison cards with an aligned table. Two cars fit small phones; three cars scroll within the table with a pinned label column and keyboard access.
+- Simplified comparison headers to short car names without plate badges and plain neutral remove icons.
+- Showed import registration age as not applicable for non-imports, while retaining unavailable values for unknown import status.
+
 - Added a sitemap and crawler rules, a clearer kentekencheck search title, and page-specific search descriptions for tools, sources and vehicle results.
 
 - Added a Dutch-road homepage hero photograph with a soft search-area fade and responsive light/dark presentation.

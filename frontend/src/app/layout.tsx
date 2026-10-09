@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Header } from "@/components/layout/Header";
+import { Header, MobileNavigation } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { siteUrl } from "@/lib/site-url";
 import "./globals.css";
@@ -13,7 +13,11 @@ export const metadata: Metadata = {
     "Doe een gratis kentekencheck met openbare RDW-gegevens. Bekijk specificaties, APK en terugroepacties en bereken je autokosten. Zonder account.",
   applicationName: "RitVizier",
   manifest: "/manifest.webmanifest",
-  icons: { icon: "/favicon.svg", apple: "/icon-192.png" },
+  icons: {
+    icon: { url: "/favicon-r.svg", type: "image/svg+xml", sizes: "any" },
+    shortcut: "/favicon.ico?v=20261009",
+    apple: "/icon-192.png?v=20261009",
+  },
   openGraph: {
     title: "RitVizier",
     description: "Alles over je auto. Helder in beeld.",
@@ -35,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="nl" suppressHydrationWarning>
+    <html lang="nl" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
@@ -46,6 +50,7 @@ export default function RootLayout({
         <Header />
         <main id="main">{children}</main>
         <Footer />
+        <MobileNavigation />
       </body>
     </html>
   );

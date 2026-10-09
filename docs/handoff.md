@@ -10,6 +10,8 @@ Read [Agent instructions](../AGENTS.md), [Contributing](../CONTRIBUTING.md), [Ar
 
 ## Current behavior
 
+The page shell uses a full-height flex layout, with the footer followed by sticky mobile navigation in document flow. It no longer reserves a separate fixed-navigation padding gap. Plate clear controls have inset touch targets. Vehicle comparison uses a semantic table with aligned values and a contained horizontal scroller for three cars. Non-import registration age is not applicable. Browser icons use the current R mark through a fresh SVG URL and ICO fallback. See [layout verification](verification.md#mobile-layout-and-comparison-polish-9-october-2026).
+
 The homepage pairs a license-plate search with a generated Dutch-road car photograph, short summaries and links to comparison and costs. A soft fade keeps the search readable in light and dark themes; phones show the photo below the form. A custom road-and-lens logo appears in the navigation, favicon, app icons and share artwork. Vehicle-page illustrations, eyebrow headings, repeated calls to action and slogans have been removed. Direct page titles and shorter empty states preserve the existing workflows. See [the interface verification](verification.md#interface-simplification-9-october-2026) for local setup and browser evidence.
 
 Search metadata now includes page-specific descriptions and a kentekencheck-focused homepage title. `/sitemap.xml` lists the six public static pages, and `/robots.txt` advertises it while disallowing API crawling. Both use the existing build-time canonical origin; see [configuration](configuration.md#frontend-and-proxy). Saved vehicles and failed lookups remain `noindex`.

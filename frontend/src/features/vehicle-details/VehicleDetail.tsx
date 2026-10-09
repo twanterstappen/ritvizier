@@ -675,14 +675,21 @@ export function VehicleDetail({
                 <Row label="Importindicatie" value={flag(v.isImport)} derived />
                 <Row
                   label="Leeftijd bij Nederlandse registratie"
-                  value={duration(
-                    v.firstRegistrationNetherlandsDate
-                      ? elapsedMonths(
-                          v.firstRegistrationDate,
-                          v.firstRegistrationNetherlandsDate,
-                        )
-                      : null,
-                  )}
+                  value={
+                    v.isImport === false
+                      ? "Niet van toepassing"
+                      : v.isImport == null
+                        ? "Niet beschikbaar"
+                        : duration(
+                            v.firstRegistrationNetherlandsDate
+                              ? elapsedMonths(
+                                  v.firstRegistrationDate,
+                                  v.firstRegistrationNetherlandsDate,
+                                )
+                              : null,
+                          )
+                  }
+                  explanation="Alleen van toepassing als het voertuig later in Nederland is geregistreerd. Afgeleid uit de eerste toelating en eerste Nederlandse registratie."
                   derived
                 />
                 <Row label="Exportindicator" value={flag(v.isExported)} />
