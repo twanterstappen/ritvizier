@@ -223,7 +223,7 @@ export function VehicleComparison() {
                           aria-label={`Verwijder ${formatPlate(v.licensePlate)} uit vergelijking`}
                           onClick={() => remove(v.licensePlate)}
                         >
-                          <X size={20} strokeWidth={2.5} aria-hidden="true" />
+                          <X size={18} strokeWidth={1.75} aria-hidden="true" />
                         </button>
                       </div>
                     </th>

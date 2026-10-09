@@ -1663,13 +1663,13 @@ input[type="range"] {
 }
 .comparison-remove {
   margin-top: 0.25rem;
-  color: var(--danger);
-  background: var(--bg);
-  border: 1px solid var(--danger);
-  border-radius: 50%;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
 }
 .comparison-remove:hover {
-  background: color-mix(in srgb, var(--danger) 12%, var(--bg));
+  color: var(--ink);
+  background: var(--surface-subtle);
 }
 .comparison-table tfoot th,
 .comparison-table tfoot td {
