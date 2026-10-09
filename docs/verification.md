@@ -9,6 +9,14 @@ Entries record the state at the time of each check. Newer dated evidence can sup
 - Desktop, small-phone and dark screenshots were inspected. End-of-page viewport captures distinguish actual footer/navigation geometry from full-page screenshots' sticky-element painting. Evidence is in ignored `artifacts/layout-polish/`, plus the existing home/vehicle captures. The comparison screenshot hides only the unfocused skip link during capture to avoid the known full-page paint artifact; product focus behavior remains unchanged.
 - Local WebKit cannot launch because Windows browser dependencies are missing, as confirmed during the preceding PR review. The new scenarios run in both engines in GitHub CI. No physical-device Safari, fresh Docker/PostgreSQL verification or public deployment is claimed by these local checks.
 
+## Search metadata and crawl discovery, 9 October 2026
+
+Added app-owned robots and sitemap routes, page-specific descriptions and a kentekencheck-focused homepage title. A read-only live check found the existing production sitemap returned 404, the homepage canonical used `https://ritvizier.nl`, and robots.txt contained proxy-provided policy text. This change has not been deployed; the public proxy's handling of the new robots rules and sitemap reference must be checked after rollout.
+
+ESLint, TypeScript, all 24 frontend unit tests and the production build pass. The build used `NEXT_PUBLIC_SITE_URL=https://ritvizier.nl`. Ten targeted browser checks pass across Chromium and WebKit: sitemap/canonical consistency, distinct page metadata, crawler-visible server-rendered vehicle descriptions, normalized plate canonicals, saved/failed lookup `noindex`, search validation and the existing 320–1440px overflow matrix. The vehicle check uses the existing isolated fixture API; no new live RDW behavior was tested.
+
+Reviewed desktop and 320px screenshots from both engines in ignored `artifacts/seo/`; no page-level horizontal overflow was found. WebKit used the existing local library setup with `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1`. The collaborative preview opened but navigation to the local server failed with both the environment-port target and loopback URL. No physical-device Safari, Docker, PostgreSQL, public rollout or Search Console indexing verification was performed.
+
 ## Dutch-road homepage hero, 9 October 2026
 
 The homepage uses a decorative Dutch-road car photograph with a horizontal fade behind the desktop search form. On phones, the image follows the form with a vertical fade. Dark mode dims the photograph and uses a matching dark fade. The image does not represent any searched vehicle.
