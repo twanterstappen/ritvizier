@@ -93,6 +93,8 @@ The source client overrides httpx requests with a default eight-second timeout a
 
 Hydration enables interactive inputs after server rendering. The LAN test covers development asset access from another device. CSS uses shared tokens, mobile-first breakpoints, intentionally scrollable vehicle tabs and reduced-motion rules. Newly mounted content uses short transitions. Years are plain text; quantities use Dutch grouping.
 
+The body fills the viewport with a flex column and a growing main section. The footer remains in document flow, followed by mobile navigation with a sticky bottom position. This reserves the navigation's actual height without extra body padding. Comparison renders one metric per table row and one vehicle per column; three-car overflow stays inside a keyboard-accessible region, with a sticky row-label column. Icon metadata selects the current R-mark SVG and a matching ICO fallback.
+
 ## Road tax
 
 Tax uses RDW massa rijklaar, fuel, selected province and passenger-car tables valid July-December 2026. Electric/hydrogen uses 70% of petrol quarterly tax, rounded down. The legacy EV column is deliberately unused. Diesel needs the particulate choice; LPG needs installation class.

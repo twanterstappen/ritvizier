@@ -10,6 +10,8 @@ Read [Agent instructions](../AGENTS.md), [Contributing](../CONTRIBUTING.md), [Ar
 
 ## Current behavior
 
+The page shell uses a full-height flex layout, with the footer followed by sticky mobile navigation in document flow. It no longer reserves a separate fixed-navigation padding gap. Plate clear controls have inset touch targets. Vehicle comparison uses a semantic table with aligned values and a contained horizontal scroller for three cars. Non-import registration age is not applicable. Browser icons use the current R mark through a fresh SVG URL and ICO fallback. See [layout verification](verification.md#mobile-layout-and-comparison-polish-9-october-2026).
+
 The homepage pairs a license-plate search with a generated Dutch-road car photograph, short summaries and links to comparison and costs. A soft fade keeps the search readable in light and dark themes; phones show the photo below the form. A custom road-and-lens logo appears in the navigation, favicon, app icons and share artwork. Vehicle-page illustrations, eyebrow headings, repeated calls to action and slogans have been removed. Direct page titles and shorter empty states preserve the existing workflows. See [the interface verification](verification.md#interface-simplification-9-october-2026) for local setup and browser evidence.
 
 The new `/aanbod` page and `Vergelijkbaar aanbod` vehicle tab search authorized Dutch listing snapshots and group duplicates with all source links retained. `LISTINGS_FILE` is unset by default, so live listings are unavailable until a current free export is connected. No JP.cars or paid API is used. See [listing search](listing-search.md) for CSV/JSON imports, required fields, conservative identity rules and operational limits.
